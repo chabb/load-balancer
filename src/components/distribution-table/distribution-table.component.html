@@ -1,0 +1,24 @@
+<nz-table
+  #nzTable
+  [nzData]="files$ | async"
+  [nzFrontPagination]="false"
+  [nzShowPagination]="false"
+>
+  <thead (nzSortChange)="onSort($event)" nzSingleSort>
+    <tr>
+      <th nzShowSort nzSortKey="fileId">File</th>
+      <th nzShowSort nzSortKey="nodeId">Node</th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-template ngFor let-data [ngForOf]="nzTable.data">
+      <tr [bgColor]="(this.color$ | async)(data.nodeId)"
+          (mouseover)="onMouseOver(data.nodeId)"
+          (mouseout)="onMouseOut()"
+        [class.highlighted]="(this.highlightNodes$ | async)[data.nodeId]">
+        <td>{{ data.fileId }}</td>
+        <td>{{ data.nodeId }}</td>
+      </tr>
+    </ng-template>
+  </tbody>
+</nz-table>

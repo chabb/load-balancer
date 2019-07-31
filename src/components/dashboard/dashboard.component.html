@@ -1,0 +1,42 @@
+<div class="dashboard">
+  <div class="tables">
+    <lbl-node-table class="node-table-container"></lbl-node-table>
+    <lbl-distribution-table
+      class="distribution-table-container"
+    ></lbl-distribution-table>
+  </div>
+  <div class="chart">
+    <div class="chart-container">
+      <svg id="chart" width="500" height="300"></svg>
+    </div>
+    <nz-card class="conf-section" nzTitle="Chart / Table configurations">
+      <div class="options">
+        <div class="option">
+          <label nz-checkbox
+                 (ngModelChange)="onConfigChange($event)"
+                 [(ngModel)]="config.colorizeNodes"
+          > Colorize nodes. This will assign a color to each node on the table and the chart</label>
+        </div>
+        <div class="option">
+          <label nz-checkbox
+                 (ngModelChange)="onConfigChange($event)"
+                 [(ngModel)]="config.scaleNodes"
+          > Scale Node. This will assign a color to each node on the table and the chart</label>
+          <div style="padding-left: 30px;"> By default, we use the % of the capacity
+            <br/>
+            <nz-radio-group [(ngModel)]="config.scalingMethod" (ngModelChange)="onConfigChange($event)">
+              <label nz-radio nzValue="ABSOLUTE">Absolute load</label>
+              <label nz-radio nzValue="RELATIVE">Relative load ( % of capacity )</label>
+            </nz-radio-group>
+          </div>
+          <br/>
+          <div class="help">
+            The size of the nodes and the files, and the distribution, can be edited in the Settings section
+          </div>
+        </div>
+      </div>
+    </nz-card>
+  </div>
+  <!-- if x axis would be the relativeLoad, then I guess we would have a pareto chart, and you would simply
+       try to minimize/investigate the first bins -->
+</div>

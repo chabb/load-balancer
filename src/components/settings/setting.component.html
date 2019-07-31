@@ -1,0 +1,31 @@
+
+<div class="settings-container">
+  Edit the state with the three editors below. Click on the reset button if everything is broken
+  <button class="reset" nz-button (click)="resetState()" nzType="primary"><i nz-icon nzType="undo"></i>Reset state</button>
+  <br/>
+  <h3> File size</h3>
+  <ngx-codemirror #cma class="codemirror-w"
+                  [ngModel]="contentFile"
+                  (ngModelChange)="onFileChange($event)"
+                  [options]="options"
+  ></ngx-codemirror>
+
+  <h3> Node capacity </h3>
+  <ngx-codemirror #cmb
+                  class="codemirror-w"
+                  [ngModel]="contentNode"
+                  (ngModelChange)="onNodeChange($event)"
+                  [options]="options"
+  ></ngx-codemirror>
+
+  <h3> Files repartition </h3>
+  <ngx-codemirror #cmc
+                  class="codemirror-w"
+                  [ngModel]="contentDist"
+                  (ngModelChange)="onDistChange($event)"
+                  [options]="options"
+  ></ngx-codemirror>
+</div>
+
+
+

@@ -1,0 +1,87 @@
+@import '../assets/styles/mixins';
+@import '../styles';
+
+@header-bck: #fbfdfe;
+
+.app-container {
+  height: 100vh; // all viewport
+  min-height: 500px; // provides minimum size so the layout will not break if the user resizes
+  min-width: 500px;
+
+  .wrapper {
+    .flex(column); // FIX FOR SAFARI
+    .flex-container-sized() //
+  }
+
+
+  .app-header {
+    color: @layout-header-background;
+    text-align: center;
+    box-shadow: 0 1px 4px 0 rgba(18, 18, 18, 0.22);
+    background-color: @header-bck;
+    position: relative;
+    z-index: 12345; // for the niceties
+  }
+
+  .app-title {
+    margin: 10px;
+  }
+  .nav-bar {
+    height: 100%;
+    .flex(column);
+    > li {
+      .flex-centered-container(column);
+      a.nav-item {
+        .flex-centered-container(column);
+        .flex-fixed-size(60px);
+        justify-content: center;
+        width: 100%;
+        color: white;
+        &.active-link {
+          background-color: #2b95d6;
+        }
+      }
+      &.ant-dropdown-menu-item-divider {
+        height: 1px;
+        margin: 0 20px;
+      }
+      &.down-item {
+        .flex-container-sized();
+        justify-content: flex-end;
+      }
+    }
+    .nav-title {
+      display: flex;
+      .flex-content-sized();
+      font-size: 10px;
+    }
+
+    .nav-icon {
+      display: flex;
+      .flex-fixed-size(25px);
+    }
+  }
+
+  .app-canvas {
+    height: 100%
+  }
+  .footer {
+    height: 45px;
+    color: white; // to match the logo
+    background-color: @layout-header-background;
+    padding: 0 80px; // match size of nav bar
+    .flex(row);
+    .lawrence-logo {
+      .flex-container-sized();
+      background-position: top right;
+      background-image: url('../assets/images/lbl-header-logo-b.png');
+      background-repeat: no-repeat;
+      background-size: contain;
+    }
+    .lawrence-copyright {
+      color: antiquewhite; // use ng-zorro color
+      .flex-container-sized();
+      .flex-centered-container();
+    }
+  }
+}

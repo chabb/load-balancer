@@ -1,0 +1,16 @@
+@import '~codemirror/lib/codemirror.css';
+@import '~codemirror/theme/material.css';
+@import '~codemirror/addon/lint/lint.css';
+@import '../../assets/styles/mixins';
+
+.settings-container {
+  padding: 25px;
+  .reset {
+    width: 150px;
+  }
+  .flex(column);
+  .codemirror-w {
+    margin: 9px 0 12px 0; // dont want to spend too much time there
+    .flex-fixed-size(200px);
+  }
+}

@@ -1,0 +1,48 @@
+@import '../../assets/styles/mixins';
+@import '~codemirror/addon/lint/lint.css';
+@import '~codemirror/lib/codemirror.css';
+@import '~codemirror/theme/material.css';
+
+.node-table-container {
+  display: inline-block;
+  margin: 10px;
+  .flex-grow-shrink-basis(1, 0, 500px);
+}
+
+.distribution-table-container {
+  .flex-grow-shrink-basis(1, 0, 300px);
+  margin: 10px;
+}
+
+svg {
+  .node {
+    stroke: black;
+  }
+}
+
+.dashboard {
+  .flex(column);
+  .tables {
+    .flex(row);
+  }
+  .chart {
+    .flex(row);
+    .chart-container {
+      .flex-fixed-size(500px);
+      height:300px;
+      rect {
+        cursor: pointer;
+      }
+    }
+
+  }
+  .options {
+    .flex(column);
+    .option {
+      .flex-fixed-size(50);
+    }
+  }
+  .conf-section {
+    margin: 10px;
+  }
+}
