@@ -15,9 +15,15 @@ export enum RepartitionValidity {
   INVALID = 'INVALID'
 }
 
-interface Nodes { [nodeId: string]: number };
-interface Files  { [fileId: string]: number };
-interface Distribution  { [fileId: string]: string };
+interface Nodes {
+  [nodeId: string]: number;
+}
+interface Files {
+  [fileId: string]: number;
+}
+interface Distribution {
+  [fileId: string]: string;
+}
 
 export interface SystemState {
   nodes: Nodes;
@@ -29,6 +35,7 @@ export interface SystemState {
 
 export interface NodeLoad {
   files: string[];
+  numberOfFiles: number;
   absoluteLoad: number;
   relativeLoad: number;
   nodeId: string;
@@ -91,11 +98,13 @@ export class NodesLoadService {
     string[]
   > = new BehaviorSubject<string[]>([]);
 
-  private readonly configState$: BehaviorSubject<any> = new BehaviorSubject<any>(this.getScale(false));
+  private readonly configState$: BehaviorSubject<any> = new BehaviorSubject<
+    any
+  >(this.getScale(false));
 
-  public readonly tableColors$ = this.configState$.pipe((map((s) =>
-       (nodeId) =>  (s.colorizeNodes) ? s.scale(nodeId) : ''
-  )));
+  public readonly tableColors$ = this.configState$.pipe(
+    map(s => nodeId => (s.colorizeNodes ? s.scale(nodeId) : ''))
+  );
 
   // TOD  proper reducer functions
   constructor() {
@@ -124,7 +133,9 @@ export class NodesLoadService {
   // the end user
 
   public resetState() {
-    this.systemState$.next(this.computeState(NODES_CAPACITY, FILES_SIZE, DISTRIBUTION));
+    this.systemState$.next(
+      this.computeState(NODES_CAPACITY, FILES_SIZE, DISTRIBUTION)
+    );
   }
 
   public updateColorMapping(colorizeNodes: boolean) {
@@ -136,9 +147,12 @@ export class NodesLoadService {
   }
 
   private getScale(colorizeNodes: boolean) {
-    return { scale:scaleOrdinal()
-      .range(colorizeNodes ? schemePaired : ['steelblue'])
-      .domain([0, Object.keys(this.getStateSnapshot().nodes)]), colorizeNodes};
+    return {
+      scale: scaleOrdinal()
+        .range(colorizeNodes ? schemePaired : ['steelblue'])
+        .domain([0, Object.keys(this.getStateSnapshot().nodes)]),
+      colorizeNodes
+    };
   }
 
   public getStateSnapshot(): SystemState {
@@ -189,7 +203,6 @@ export class NodesLoadService {
     const validity = checkDistribution(nodes, files, distribution);
     switch (validity) {
       case RepartitionValidity.VALID: {
-        console.warn('Invalid repartition');
         return {
           validity,
           nodes,
@@ -235,9 +248,11 @@ function computeState(
       if (acc[nodeId]) {
         acc[distribution[fileId]].files.push(fileId);
         acc[distribution[fileId]].absoluteLoad += files[fileId];
+        acc[distribution[fileId]].numberOfFiles++;
       } else {
         acc[distribution[fileId]] = {
           files: [fileId],
+          numberOfFiles: 1,
           absoluteLoad: files[fileId],
           relativeLoad: null,
           nodeId
@@ -255,7 +270,7 @@ function computeState(
   return computedDistribution;
 }
 
-function getInvalidState(nodes, files) {
+function getInvalidState(nodes, files): SystemState {
   return {
     validity: RepartitionValidity.INVALID,
     nodes,

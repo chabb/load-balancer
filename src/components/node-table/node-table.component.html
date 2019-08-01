@@ -9,19 +9,23 @@
       <th nzShowExpand></th>
       <th nzShowSort nzSortKey="nodeId">Node</th>
       <th nzShowSort nzSortKey="capacity">Capacity</th>
+      <th nzShowSort nzSortKey="numberOfFiles">N. of files</th>
       <th nzShowSort nzSortKey="absoluteLoad"># Fill</th>
       <th nzShowSort nzSortKey="relativeLoad">% Full</th>
     </tr>
   </thead>
   <tbody>
     <ng-template ngFor let-data [ngForOf]="nzTable.data">
-      <tr [bgColor]="(this.color$ | async)(data.nodeId)"
-          (mouseover)="onMouseOver(data.nodeId)"
-          (mouseout)="onMouseOut()"
-        [class.highlighted]="(this.highlightNodes$ | async)[data.nodeId]">
+      <tr
+        [bgColor]="(this.color$ | async)(data.nodeId)"
+        (mouseover)="onMouseOver(data.nodeId)"
+        (mouseout)="onMouseOut()"
+        [class.highlighted]="(this.highlightNodes$ | async)[data.nodeId]"
+      >
         <td nzShowExpand [(nzExpand)]="mapOfExpandData[data.nodeId]"></td>
         <td>{{ data.nodeId }}</td>
         <td>{{ getNodeCapacity(data.nodeId) }}</td>
+        <td>{{ data.numberOfFiles }}</td>
         <td>{{ data.absoluteLoad }}</td>
         <td>{{ percentFormatter(data.relativeLoad) }}</td>
       </tr>

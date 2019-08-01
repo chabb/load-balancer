@@ -11,3 +11,23 @@
 <!-- do a threshold/quantize/quantile binning  with 5 bins -->
 
 <!-- quantile with 5 can give us basic statistics, e.g a node in the first bin is less loaded than 80 % of the other -->
+<div>
+  This tries to cluster the nodes in different clusters ( 3), according to their
+  relative load
+</div>
+<p>
+  First graph use a linear scale to encode the relative load nodes of a load
+</p>
+<p></p>
+<p>
+  Second one use user-defined interval to cluster the nodes. It tells you that
+  most of the nodes have a load < 33% of their capacity, and only one has a load
+  of > 66%
+</p>
+<p>
+  Third one use clusters with even intervals.
+  <br />
+  Fourth use clusters that have roughly the same amount of members.
+</p>
+<div id="series" #container></div>
+<div style="height: 20px;" id="node-description"></div>

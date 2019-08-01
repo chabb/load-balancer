@@ -27,27 +27,8 @@ const BATCH_THR_COLORS = quantize(
 @Component({
   selector: 'lbl-extra',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <div>
-      This tries to cluster the nodes in different clusters ( 3), according to
-      their relative load
-    </div>
-    <p>
-      First graph use a linear scale to encode the relative load nodes of a load
-    </p>
-    <p></p>
-    <p>
-      Second one use user-defined interval to cluster the nodes. It tells you
-      that most of the nodes have a load < 33% of their capacity, and only one
-      has a load of > 66%
-    </p>
-    <p>
-      Third one use clusters with even intervals Fourht use clusters that have
-      roughly the same amount of members The limit of the cluster allows us to
-      derive some basic statistics
-    </p>
-    <div #container></div>
-  `
+  styleUrls: ['./extra.component.less'],
+  templateUrl: './extra.component.html'
 })
 export class ExtraComponent implements AfterViewInit, OnInit {
   // caching objects so we dont have to recreate them
@@ -61,11 +42,10 @@ export class ExtraComponent implements AfterViewInit, OnInit {
   constructor(private nodeLoadService: NodesLoadService) {}
 
   ngOnInit() {
-    //console.log(BATCH_THR_COLORS);
     this.linearScale = scaleLinear().range([
       BATCH_THR_COLORS[0],
       BATCH_THR_COLORS[NUMBER_OF_BINS - 1]
-    ]); //   .domain([0, d3.max(data)])
+    ]);
 
     this.threshold = scaleThreshold()
       .domain([0.3, 0.45, 0.51, 0.95, 1]) // pass your custom number
@@ -98,7 +78,6 @@ export class ExtraComponent implements AfterViewInit, OnInit {
     (this.container.nativeElement as HTMLElement).appendChild(
       chart(data, this.quantile)
     );
-    console.log(_data);
   }
 }
 
@@ -120,6 +99,14 @@ function chart(data, scale) {
     .join('rect')
     .attr('width', w - 3)
     .attr('height', w - 3)
+    .attr('class', 'item')
+    .attr('style', 'cursor: pointer') // why CSS does not work there
+    .on('mouseover', d => {
+      select('#node-description').html(
+        `Node: ${d.nodeId}  Absolute Load: ${d.absoluteLoad} Relative Load: ${d.relativeLoad}`
+      );
+    })
+    .on('mouseout', () => select('#node-description').html(''))
     .attr('x', (_, i) => x(i % 20))
     .attr('y', (_, i) => x((i / 20) | 0))
     .style('fill', d => (scale ? scale(d.relativeLoad) : '#222'));
