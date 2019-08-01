@@ -17,7 +17,7 @@ import { SettingsComponent } from '../components/settings/settings.component';
 import { DashboardComponent } from '../components/dashboard/dashboard.component';
 import { ExtraComponent } from '../components/extra/extra.component';
 import { PageNotFoundComponent } from './page-not-found.component';
-import { CodemirrorComponent } from '@ctrl/ngx-codemirror';
+import { CodemirrorComponent, CodemirrorModule } from '@ctrl/ngx-codemirror';
 
 registerLocaleData(en);
 
@@ -29,11 +29,11 @@ registerLocaleData(en);
     SettingsComponent,
     DashboardComponent,
     ExtraComponent,
-    CodemirrorComponent,
     PageNotFoundComponent
   ],
   imports: [
     BrowserModule,
+    CodemirrorModule,
     AppRoutingModule,
     NgZorroAntdModule,
     FormsModule,

@@ -1,6 +1,6 @@
 import { scaleBand, scaleLinear, scaleQuantize, scaleOrdinal } from 'd3-scale';
 import { stack, stackOrderNone, stackOffsetNone } from 'd3-shape';
-import { select } from 'd3-selection';
+import { select, event } from 'd3-selection';
 import { axisLeft, axisBottom } from 'd3-axis';
 import 'd3-transition'; // this is needed to augment selection prototype with transition
 import { schemePaired } from 'd3-scale-chromatic';
@@ -30,6 +30,8 @@ export enum EventType {
 }
 
 const speed = 100;
+let TOOLTIP_ID = 0;
+const TOOLTIP_CLASS = 'chart-tip';
 
 // TODO(chab) decouple business logic from rendering logic
 
@@ -54,22 +56,33 @@ export class Chart {
 
   private subscription;
 
+  private tooltip;
+
   public eventBus: Subject<{ event: EventType; payload?: any }> = new Subject<{
     event: EventType;
     payload;
   }>();
 
   constructor(private chartOptions, state, nls) {
+    TOOLTIP_ID++;
     this.buildDomNodes();
     this.render(state);
-    this.subscription = nls.nodesToHiglight().pipe(pairwise()).subscribe((n) => {
+    this.subscription = nls
+      .nodesToHiglight()
+      .pipe(pairwise())
+      .subscribe(n => {
         if (n[0].length === 1) {
           select(`#${n[0]}`).attr('fill', this.chartOptions.scale(n[0]));
         }
         if (n[1].length === 1) {
           select(`#${n[1]}`).attr('fill', 'red');
         }
-    });
+      });
+    this.tooltip = select('body')
+      .append('div')
+      .attr('class', TOOLTIP_CLASS)
+      .attr('id', `${TOOLTIP_ID}__${TOOLTIP_CLASS}`)
+      .style('opacity', 0);
   }
 
   public render(state) {
@@ -100,9 +113,14 @@ export class Chart {
       this.height - this.chartOptions.margin.bottom,
       this.chartOptions.margin.top
     ]);
-    this.yRenderingScale.domain([0, this.chartOptions.scaleNodes
-      ? (this.chartOptions.scalingMethod === 'RELATIVE' ? this.chartOptions.binNumbers : 1000)
-      : this.chartOptions.binNumbers]); // TODO find max number of nodes
+    this.yRenderingScale.domain([
+      0,
+      this.chartOptions.scaleNodes
+        ? this.chartOptions.scalingMethod === 'RELATIVE'
+          ? this.chartOptions.binNumbers
+          : 1000
+        : this.chartOptions.binNumbers
+    ]); // TODO find max number of nodes
 
     // to find the domain, we need not find how the node fall into the buckets
     // 0 ->x`
@@ -122,7 +140,10 @@ export class Chart {
         index === 0 ? this.nodeToBinScale.domain()[0] : array[index - 1],
         threshold
       ]);
-    this.thresholds.push([this.thresholds[this.thresholds.length - 1][1], this.nodeToBinScale.domain()[1]]);
+    this.thresholds.push([
+      this.thresholds[this.thresholds.length - 1][1],
+      this.nodeToBinScale.domain()[1]
+    ]);
     /*  stack just compute y0-y1 interval */
     /*node1:
      absoluteLoad: 696
@@ -149,8 +170,13 @@ export class Chart {
     const stackLayout = stack()
       .keys(Object.keys(state.nodes))
       .value((d, key) => {
-        return (!!d[key] ? (this.chartOptions.scaleNodes ?
-          (this.chartOptions.scalingMethod === 'ABSOLUTE' ?  d[key].absoluteLoad  : d[key].relativeLoad) : 1) : 0);
+        return !!d[key]
+          ? this.chartOptions.scaleNodes
+            ? this.chartOptions.scalingMethod === 'ABSOLUTE'
+              ? d[key].absoluteLoad
+              : d[key].relativeLoad
+            : 1
+          : 0;
       }) // see above comment
       .order(stackOrderNone)
       .offset(stackOffsetNone)(bins);
@@ -164,8 +190,6 @@ export class Chart {
     //  .attr("height", d => y(d[0]) - y(d[1]))
 
     // color index
-
-
 
     // using quantize give us X bins, with equal distribution
     // using quantile give us X bins, with an equal ( best-effort) frequency
@@ -190,6 +214,7 @@ export class Chart {
         // we use a function in order to acces DOM node via this
         select(this).attr('fill', 'red');
         self.eventBus.next({ event: EventType.MOUSEOVER, payload: [d.key] });
+        self.showTooltip(d);
       })
       .on('mouseout', function(d, i) {
         select(this).attr('fill', function() {
@@ -197,13 +222,13 @@ export class Chart {
           return self.chartOptions.scale(d.key);
         });
         self.eventBus.next({ event: EventType.MOUSEOUT });
+        self.hideTooltip();
       })
       .merge(group)
       .attr('id', d => d.key)
       .transition()
       .duration(speed)
       .attr('fill', d => this.chartOptions.scale(d.key));
-
 
     const bars = this.svgNode
       .selectAll('g.layer')
@@ -248,6 +273,25 @@ export class Chart {
     this.updateAxisLocation();
   }
 
+  private showTooltip(d) {
+    d = this.cachedState.nodeLoad[d.key];
+    this.tooltip
+      .html(`${d.nodeId} - Load : ${d.absoluteLoad} bytes`)
+      .transition()
+      .duration(200)
+      .style('left', event.pageX + 'px')
+      .style('top', event.pageY - 28 + 'px')
+      .style('opacity', 0.9);
+  }
+
+  private hideTooltip() {
+    this.tooltip
+      .html('')
+      .transition()
+      .duration(200)
+      .style('opacity', 0.0);
+  }
+
   private updateAxisLocation() {
     this.yAxis.attr(
       'transform',
@@ -277,14 +321,16 @@ export class Chart {
       .selectAll('.x-axis')
       .transition()
       .duration(speed)
-      .call(axisBottom(this.xRenderingScale)
-        .tickSizeOuter(0)
-        .tickFormat(d => this.thresholds[d]));
-
+      .call(
+        axisBottom(this.xRenderingScale)
+          .tickSizeOuter(0)
+          .tickFormat(d => this.thresholds[d])
+      );
   }
 
   public destroy() {
     this.subscription.unsubscribe();
+    this.tooltip.node();
   }
 }
 
