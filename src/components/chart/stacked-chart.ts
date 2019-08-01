@@ -144,16 +144,6 @@ export class Chart {
       this.thresholds[this.thresholds.length - 1][1],
       this.nodeToBinScale.domain()[1]
     ]);
-    /*  stack just compute y0-y1 interval */
-    /*node1:
-     absoluteLoad: 696
-    files: ["file11"]
-    nodeId: "node1"
-    relativeLoad: 0.5640194489465153*/
-
-    // we need to have the data in that save { bin:, nodeX: { absoluteLoad:, relativeLoad: } }
-    // we're going to cheat a bit, we know that bin is a ordinal value between 0 - numberOfBins,
-    // we can leverage that fact to avoid doing two loops
 
     const bins = Object.keys(state.nodeLoad).reduce((acc, nodeId) => {
       const bin = this.nodeToBinScale(state.nodeLoad[nodeId].absoluteLoad);
@@ -162,10 +152,6 @@ export class Chart {
       return acc;
     }, Array.from({ length: this.chartOptions.binNumbers }, (v, k) => ({ bin: k })));
 
-    // value accessor .. if we consider node per se, we just return 1 or 0
-    // if we want the y of nodes to match absolute/relative load, we use absolute/relative load
-    // if we want to just see the size of node, we use the size of the load(would be interesting to have tree map,
-    // that shows what's happening into it (file size + unused size))
 
     const stackLayout = stack()
       .keys(Object.keys(state.nodes))
@@ -181,22 +167,6 @@ export class Chart {
       .order(stackOrderNone)
       .offset(stackOffsetNone)(bins);
     this.stackLayout = stackLayout;
-    // index of the series match the node number
-    // index inside the serie match the bin
-    // a node can only be in one bin, so there should only one [n][0] -> [x,y] ( where y - x is one )
-
-    // .attr("x", d => x(d.data.bin)) // or simply the index
-    //  .attr("y", d => y(d[1]))
-    //  .attr("height", d => y(d[0]) - y(d[1]))
-
-    // color index
-
-    // using quantize give us X bins, with equal distribution
-    // using quantile give us X bins, with an equal ( best-effort) frequency
-    // using threshold let the user defines its own interval
-
-    // one interesting thing is that if we render a square for each node, we might want to
-    // switch between absolute/relative view
   }
 
   private updateStacks(stackLayout) {
