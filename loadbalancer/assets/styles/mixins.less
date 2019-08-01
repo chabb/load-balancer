@@ -1,0 +1,38 @@
+// This file contains general purposes mixins
+
+.flex(@direction: row) {
+  display: flex;
+  flex-direction: @direction;
+}
+
+.flex-grow-shrink-basis(@grow, @shrink, @basis) {
+  flex-grow: @grow;
+  flex-shrink: @shrink;
+  flex-basis: @basis;
+}
+
+.flex-fixed-size(@size) {
+  .flex-grow-shrink-basis(0, 0, @size);
+}
+
+.flex-fixed-size(@size, @enforce) when (@enforce = false) {
+  .flex-fixed-size(@size);
+}
+
+.flex-fixed-size(@size, @enforce) when (@enforce = true) {
+  .flex-fixed-size(@size);
+  .equal_width_height(@size);
+}
+
+.flex-content-sized() {
+  .flex-grow-shrink-basis(0, 0, auto);
+}
+
+.flex-container-sized() {
+  .flex-grow-shrink-basis(1, 1, 0);
+}
+
+.flex-centered-container(@direction: row) {
+  .flex(@direction);
+  align-items: center;
+}
