@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
       nzSubTitle="Sorry, the page you visited does not exist."
     >
       <div nz-result-extra>
-        <button (click)="navigateHome($event)" nz-button nzType="primary">
+        <button (click)="navigateHome()" nz-button nzType="primary">
           Back Home
         </button>
       </div>

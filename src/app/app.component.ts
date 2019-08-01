@@ -24,7 +24,7 @@ export class AppComponent {
   public title = 'load-balancer';
   public navItems = NAV_BAR;
 
-  private activeRoute$ = new Observable<string>();
+  public activeRoute$ = new Observable<string>();
   public routeToApp = NAV_BAR.reduce((acc, app) => {
     acc[app.target] = app.label;
     return acc;

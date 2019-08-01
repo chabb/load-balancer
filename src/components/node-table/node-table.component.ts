@@ -18,8 +18,6 @@ export class NodeTableComponent {
     sortValue: 'ascend'
   });
 
-
-
   public nodes$ = merge(
     this.nodeLoadService.nodes().pipe(
       combineLatest(this.sortState$),
@@ -37,13 +35,13 @@ export class NodeTableComponent {
       map(nodes => nodes.reduce((acc, node) => (acc[node] = true) && acc, {}))
     );
 
-  constructor(private nodeLoadService: NodesLoadService) { }
+  constructor(private nodeLoadService: NodesLoadService) {}
 
   onMouseOver($event) {
     this.nodeLoadService.updateSelectedNodes([$event]);
   }
 
-  onMouseOut($event) {
+  onMouseOut() {
     this.nodeLoadService.updateSelectedNodes([]);
   }
 

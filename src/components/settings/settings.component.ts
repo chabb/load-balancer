@@ -23,11 +23,10 @@ import { NodesLoadService } from '../../app/nodes-load.service';
   styleUrls: ['./style.less']
 })
 export class SettingsComponent {
-  private options;
-  private contentFile;
-  private contentNode;
-  private contentDist;
-  private ready;
+  options;
+  contentFile;
+  contentNode;
+  contentDist;
 
   // TODO(chab) re-use the older codemirror component instead
   @ViewChild('cma', { static: false}) cma: ElementRef;

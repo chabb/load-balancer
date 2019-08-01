@@ -95,5 +95,9 @@ makes more sense
 
 ![BundleBetter](https://raw.github.com/chabb/load-balancer/master/images/good_bundle.png)
 
-Our app take no space. Only angular and the different modules we use take a lot of space. You can notice
+Our app take no space. Only angular, the css styles, and the different modules we use take a lot of space. You can notice
 that a lot of space is taken by the icons of the component library. We could remove them
+
+
+### Time profiler
+
