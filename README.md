@@ -35,6 +35,8 @@ ng build --prod --base-href "https://chabb.github.io/load-balancer/"
 ngh
 ```
 
+We should pass the commitId to the app, so we can be sure on which commit we are
+
 ## Manual
 
 Dashboard tab has the app.

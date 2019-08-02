@@ -21,7 +21,7 @@
           <label nz-checkbox
                  (ngModelChange)="onConfigChange($event)"
                  [(ngModel)]="config.scaleNodes"
-          > Scale Node. This will assign a color to each node on the table and the chart</label>
+          > Scale Node. This will scale the chart according to the node load</label>
           <div style="padding-left: 30px;"> By default, we use the % of the capacity
             <br/>
             <nz-radio-group [(ngModel)]="config.scalingMethod" (ngModelChange)="onConfigChange($event)">
