@@ -28,6 +28,8 @@ svg {
   .chart {
     .flex(row);
     .chart-container {
+      overflow: hidden;
+      position: relative; // prevent tooltip from overflowing
       .flex-fixed-size(500px);
       height:300px;
       rect {

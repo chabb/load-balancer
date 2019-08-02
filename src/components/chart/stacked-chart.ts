@@ -79,11 +79,12 @@ export class Chart {
           select(`#${n[1]}`).attr('fill', 'red');
         }
       });
-    this.tooltip = select('body')
+    this.tooltip = select('.chart')
       .append('div')
       .attr('class', TOOLTIP_CLASS)
       .attr('id', `${TOOLTIP_ID}__${TOOLTIP_CLASS}`)
-      .style('opacity', 0);
+      .style('opacity', 0)
+      .style('display', 'none');
   }
 
   public render(state) {
@@ -183,6 +184,8 @@ export class Chart {
     const group = this.svgNode
       .selectAll('g.layer')
       .data(stackLayout, d => d.key);
+
+
     group.exit().remove();
 
     group
@@ -256,6 +259,7 @@ export class Chart {
   private showTooltip(d) {
     d = this.cachedState.nodeLoad[d.key];
     this.tooltip
+      .style('display', 'block')
       .html(`${d.nodeId} - Load : ${d.absoluteLoad} bytes`)
       .transition()
       .duration(200)
@@ -269,7 +273,9 @@ export class Chart {
       .html('')
       .transition()
       .duration(200)
-      .style('opacity', 0.0);
+      .style('opacity', 0.0)
+      .transition()
+      .style('display', 'none');
   }
 
   private updateAxisLocation() {
