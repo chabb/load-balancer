@@ -24,7 +24,7 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 
 ## Deploy
 
-This will push the prod build on gh-pages
+Run those command to deploy on github pages
 
 ```
 ng build --prod --base-href "https://chabb.github.io/load-balancer/"
@@ -96,10 +96,11 @@ is not properly garbage collected. Instance are created on the heap, but not rel
 can see that the chart object is retained by some other object. This gives
 me a clue that i forget to manually release an observable object.
 
-![Memory leak, fixed](https://raw.github.com/chabb/load-balancer/master/images/leak-fixed.png)
+![Memory leak, leaking](https://raw.github.com/chabb/load-balancer/master/images/leak-leaking.png)
 
 After making the necessary change, you can see that the chart instance is correctly freed
-![Memory leak, leaking](https://raw.github.com/chabb/load-balancer/master/images/leak-leaking.png)
+
+![Memory leak, fixed](https://raw.github.com/chabb/load-balancer/master/images/leak-fixed.png)
 
 This was an easy case :)
 
@@ -113,9 +114,9 @@ be worth finding an alternative, or investigating if it's possible to only impor
 ![BundleBig](https://raw.github.com/chabb/load-balancer/master/images/bigbundle.png)
 
 You can see something suspicious in the above screenshot. The styles (less files) for
-our component are way too big. This is because i've been importing by mistakes some
+our components are way too big ( they should be no .less files at all). This is because i've been importing by mistakes some
 stylesheets from the component-library. After fixing it, you can see that the bundle
-makes more sense
+makes more sense. See screenshot below
 
 ![BundleBetter](https://raw.github.com/chabb/load-balancer/master/images/good_bundle.png)
 
