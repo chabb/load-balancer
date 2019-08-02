@@ -60,6 +60,10 @@ easily, as all the components are decoupled.
   - It's quite the same table
 - Better tooltip on the chart
 - Allow the chart to be resizable
+- The domain of the y axis is found in a bad way
+- Automatic detection of the bins domain
+- Dynamic number of bins ( either by the user, or computed )
+- The axises of the chart could be better
 - Allow an user to pass a custom algorithm ( we can add another editor in the settings section )
   that generates a distribution. The algorith would be a JS function that get passed the nodes and files, and
   return a distribution.

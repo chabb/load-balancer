@@ -4,6 +4,7 @@ import { select, event } from 'd3-selection';
 import { axisLeft, axisBottom } from 'd3-axis';
 import 'd3-transition'; // this is needed to augment selection prototype with transition
 import { schemePaired } from 'd3-scale-chromatic';
+import { max } from 'd3-array';
 
 import { SystemState } from '../../app/nodes-load.service';
 import { Subject } from 'rxjs';
@@ -113,21 +114,13 @@ export class Chart {
       this.height - this.chartOptions.margin.bottom,
       this.chartOptions.margin.top
     ]);
-    this.yRenderingScale.domain([
-      0,
-      this.chartOptions.scaleNodes
-        ? this.chartOptions.scalingMethod === 'RELATIVE'
-          ? this.chartOptions.binNumbers
-          : 1000
-        : this.chartOptions.binNumbers
-    ]); // TODO find max number of nodes
 
     // to find the domain, we need not find how the node fall into the buckets
     // 0 ->x`
 
     // find the bins
     this.nodeToBinScale = scaleQuantize()
-      .domain([0, 1000])
+      .domain([0, 1000]) // determine the domain dynamically
       .range(Array.from({ length: this.chartOptions.binNumbers }, (v, k) => k));
     this.xRenderingScale.domain(
       Array.from({ length: this.chartOptions.binNumbers }, (v, k) => k)
@@ -166,6 +159,22 @@ export class Chart {
       }) // see above comment
       .order(stackOrderNone)
       .offset(stackOffsetNone)(bins);
+    const _max = max(stackLayout[0].map(a => Object.keys(a.data).reduce((acc,key) => {
+      if (key.indexOf('node') < 0) {
+        return acc;
+      } else {
+        return acc + a.data[key].absoluteLoad;
+      }
+    }, 0)));
+    this.yRenderingScale.domain([
+      0,
+      this.chartOptions.scaleNodes
+        ? this.chartOptions.scalingMethod === 'RELATIVE'
+        ? this.chartOptions.binNumbers
+        : _max // determine this number automatically
+        : this.chartOptions.binNumbers
+    ]);
+
     this.stackLayout = stackLayout;
   }
 
