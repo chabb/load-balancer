@@ -166,7 +166,7 @@ export class Chart {
           } else {
             return (
               acc +
-              (this.chartOptions.scalingMethod === 'RELATIVE'
+              ((this.chartOptions.scalingMethod === 'RELATIVE' || !this.chartOptions.scaleNodes )
                 ? 1
                 : a.data[key].absoluteLoad)
             );
