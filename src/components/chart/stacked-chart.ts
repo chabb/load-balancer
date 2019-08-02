@@ -145,7 +145,6 @@ export class Chart {
       return acc;
     }, Array.from({ length: this.chartOptions.binNumbers }, (v, k) => ({ bin: k })));
 
-
     const stackLayout = stack()
       .keys(Object.keys(state.nodes))
       .value((d, key) => {
@@ -159,21 +158,23 @@ export class Chart {
       }) // see above comment
       .order(stackOrderNone)
       .offset(stackOffsetNone)(bins);
-    const _max = max(stackLayout[0].map(a => Object.keys(a.data).reduce((acc,key) => {
-      if (key.indexOf('node') < 0) {
-        return acc;
-      } else {
-        return acc + a.data[key].absoluteLoad;
-      }
-    }, 0)));
-    this.yRenderingScale.domain([
-      0,
-      this.chartOptions.scaleNodes
-        ? this.chartOptions.scalingMethod === 'RELATIVE'
-        ? this.chartOptions.binNumbers
-        : _max // determine this number automatically
-        : this.chartOptions.binNumbers
-    ]);
+    const rmax = max(
+      stackLayout[0].map(a =>
+        Object.keys(a.data).reduce((acc, key) => {
+          if (key.indexOf('node') < 0) {
+            return acc;
+          } else {
+            return (
+              acc +
+              (this.chartOptions.scalingMethod === 'RELATIVE'
+                ? 1
+                : a.data[key].absoluteLoad)
+            );
+          }
+        }, 0)
+      )
+    );
+    this.yRenderingScale.domain([0, rmax]);
 
     this.stackLayout = stackLayout;
   }
