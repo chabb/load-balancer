@@ -76,7 +76,7 @@ export class Chart {
           select(`#${n[0]}`).attr('fill', this.chartOptions.scale(n[0]));
         }
         if (n[1].length === 1) {
-          select(`#${n[1]}`).attr('fill', 'red');
+          select(`#${n[1]}`).attr('fill', '#e6f7ff');
         }
       });
     this.tooltip = select('.chart')
@@ -195,15 +195,10 @@ export class Chart {
       .attr('fill', d => this.chartOptions.scale(d.key))
       .on('mouseover', function(d, i, j) {
         // we use a function in order to acces DOM node via this
-        select(this).attr('fill', 'red');
         self.eventBus.next({ event: EventType.MOUSEOVER, payload: [d.key] });
         self.showTooltip(d);
       })
       .on('mouseout', function(d, i) {
-        select(this).attr('fill', function() {
-          // we use a function in order to acces DOM node via this
-          return self.chartOptions.scale(d.key);
-        });
         self.eventBus.next({ event: EventType.MOUSEOUT });
         self.hideTooltip();
       })
@@ -300,7 +295,9 @@ export class Chart {
       .selectAll('.y-axis')
       .transition()
       .duration(speed)
-      .call(axisLeft(this.yRenderingScale).ticks(null, 's'));
+      .call(axisLeft(this.yRenderingScale).ticks(
+        this.chartOptions.scaleNodes ? null : this.yRenderingScale.domain()[1],
+        this.chartOptions.scaleNodes ? 's' : 'd'));
 
     this.thresholds = this.thresholds.map(t => `${t[0]} -> ${t[1]}`);
     this.svgNode
