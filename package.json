@@ -8,7 +8,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "stats": "webpack-bundle-analyzer dist/loadbalancer/stats-es5.json"
+    "stats": "webpack-bundle-analyzer dist/loadbalancer/stats-es5.json",
+    "tag": "node src/scripts/version-tag.js"
   },
   "private": true,
   "dependencies": {
@@ -42,6 +43,7 @@
     "@types/node": "~8.9.4",
     "husky": "^3.0.1",
     "codelyzer": "^5.0.1",
+    "git-describe": "^4.0.4",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~4.0.0",
