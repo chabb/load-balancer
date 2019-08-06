@@ -167,9 +167,11 @@ export class Chart {
           } else {
             return (
               acc +
-              ((this.chartOptions.scalingMethod === 'RELATIVE' || !this.chartOptions.scaleNodes )
-                ? 1
-                : a.data[key].absoluteLoad)
+              (this.chartOptions.scaleNodes
+                ? this.chartOptions.scalingMethod === 'ABSOLUTE'
+                  ? a.data[key].absoluteLoad
+                  : a.data[key].relativeLoad
+                : 1)
             );
           }
         }, 0)
@@ -184,7 +186,6 @@ export class Chart {
     const group = this.svgNode
       .selectAll('g.layer')
       .data(stackLayout, d => d.key);
-
 
     group.exit().remove();
 
@@ -295,9 +296,14 @@ export class Chart {
       .selectAll('.y-axis')
       .transition()
       .duration(speed)
-      .call(axisLeft(this.yRenderingScale).ticks(
-        this.chartOptions.scaleNodes ? null : this.yRenderingScale.domain()[1],
-        this.chartOptions.scaleNodes ? 's' : 'd'));
+      .call(
+        axisLeft(this.yRenderingScale).ticks(
+          this.chartOptions.scaleNodes
+            ? null
+            : this.yRenderingScale.domain()[1],
+          this.chartOptions.scaleNodes ? 's' : 'd'
+        )
+      );
 
     this.thresholds = this.thresholds.map(t => `${t[0]} -> ${t[1]}`);
     this.svgNode
