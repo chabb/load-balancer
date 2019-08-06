@@ -211,7 +211,7 @@ export class Chart {
 
     const bars = this.svgNode
       .selectAll('g.layer')
-      .selectAll('rect')
+      .selectAll('g.node-group')
       .data(
         (d, i, j) => {
           const t = d.map(item => (item.node = d.key) && item); // KIND OF HACK
@@ -226,12 +226,18 @@ export class Chart {
 
     // every layer match a particular node
 
-    bars
+    let b = bars
       .enter()
-      .append('rect')
+      .append('g')
+      .classed('node-group', true);
+
+    b.append('rect')
       .classed('node', true)
-      .attr('width', this.xRenderingScale.bandwidth())
-      .merge(bars)
+      .attr('width', this.xRenderingScale.bandwidth());
+
+    b = b.merge(bars);
+
+    b.select('rect.node')
       .transition()
       .duration(speed)
       .attr('x', d => this.xRenderingScale(d.data.bin))
@@ -240,6 +246,38 @@ export class Chart {
         'height',
         d => this.yRenderingScale(d[0]) - this.yRenderingScale(d[1])
       );
+
+    // ideally we should use a scale [0,1] -> [0, width], but i'll need to rewrite some part
+    const scale = scaleLinear()
+      .domain([0, 1])
+      .range([0, this.xRenderingScale.bandwidth()]);
+
+    const t = this.svgNode
+      .selectAll('g.layer')
+      .selectAll('g.node-group')
+      .selectAll('.files')
+      .data((d, i, j) => {
+        console.log(d.data[d.node]);
+        if (d.data[d.node]) {
+          let start = 0;
+          const r = d.data[d.node].files.reduce((acc, file) => {
+            const fileSize = this.cachedState.files[file];
+            const node = this.cachedState.nodes[d.node];
+            console.log(fileSize, node);
+            const end = scale(fileSize / node);
+            acc.push({ x: start, y: end });
+            start = start + end;
+            return acc;
+          }, []);
+          console.log('done -> acc', r);
+          return r;
+        } else {
+          return [];
+        } // we will compute the layout here
+      })
+      .enter();
+
+    t.append('rect').classed('files', true);
   }
 
   private buildDomNodes() {
