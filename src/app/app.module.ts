@@ -45,4 +45,3 @@ registerLocaleData(en);
 })
 export class AppModule {}
 
-console.log('stf--');

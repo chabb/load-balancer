@@ -32,7 +32,10 @@ export class NodeTableComponent {
   public highlightNodes$ = this.nodeLoadService
     .nodesToHiglight()
     .pipe(
-      map(nodes => nodes.reduce((acc, node) => (acc[node] = true) && acc, {}))
+      map(nodes => nodes.reduce((acc, node) => {
+        acc[node] = true;
+        return acc;
+      }, {}))
     );
 
   constructor(private nodeLoadService: NodesLoadService) {}

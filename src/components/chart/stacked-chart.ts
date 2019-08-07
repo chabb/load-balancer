@@ -19,6 +19,7 @@ export interface ChartConfig {
   };
   binNumbers: number;
   colorizeNodes: boolean;
+  wholeBin: boolean;
   scaleNodes: boolean;
   displayFilesInChart: boolean;
   scale;
@@ -55,6 +56,7 @@ export class Chart {
   private stackLayout;
 
   private cachedState: SystemState;
+  private nodesToBin;
 
   private subscription;
 
@@ -73,11 +75,11 @@ export class Chart {
       .nodesToHiglight()
       .pipe(pairwise())
       .subscribe(n => {
-        if (n[0].length === 1) {
-          select(`#${n[0]}`).attr('fill', this.chartOptions.scale(n[0]));
+        if (n[0].length >= 1) {
+          n[0].forEach(id => select(`#${id}`).attr('fill', this.chartOptions.scale(id[0])));
         }
-        if (n[1].length === 1) {
-          select(`#${n[1]}`).attr('fill', '#e6f7ff');
+        if (n[1].length >= 1) {
+          n[1].forEach(id => select(`#${id}`).attr('fill', '#e6f7ff'));
         }
       });
     this.tooltip = select('.chart')
@@ -147,6 +149,19 @@ export class Chart {
       return acc;
     }, Array.from({ length: this.chartOptions.binNumbers }, (v, k) => ({ bin: k })));
 
+    // TOD(chab) re-think the view model
+    const nodeToBin = bins.reduce((acc, b) => {
+      Object.keys(b).forEach((key) => {
+        if (key !== 'bin') {
+          acc[key] = b.bin;
+        }
+      }, []);
+      acc[b.bin] = Object.keys(b).filter(k => k !== 'bin');
+
+      return acc;
+    }, {});
+    this.nodesToBin = nodeToBin;
+
     const stackLayout = stack()
       .keys(Object.keys(state.nodes))
       .value((d, key) => {
@@ -197,7 +212,11 @@ export class Chart {
       .attr('fill', d => this.chartOptions.scale(d.key))
       .on('mouseover', function(d, i, j) {
         // we use a function in order to acces DOM node via this
-        self.eventBus.next({ event: EventType.MOUSEOVER, payload: [d.key] });
+        if (!self.chartOptions.wholeBin) {
+          self.eventBus.next({ event: EventType.MOUSEOVER, payload: [d.key] });
+        } else {
+          self.eventBus.next({ event: EventType.MOUSEOVER, payload: self.nodesToBin[self.nodesToBin[d.key]]});
+        }
         self.showTooltip(d);
       })
       .on('mouseout', function(d, i) {
@@ -273,14 +292,12 @@ export class Chart {
           const r = d.data[d.node].files.reduce((acc, file) => {
             const fileSize = this.cachedState.files[file];
             const node = this.cachedState.nodes[d.node];
-            console.log(fileSize, node);
             const end = scale(fileSize / node);
             const height = this.yRenderingScale(d[0]) - this.yRenderingScale(d[1]); //
             acc.push({ x1: start, x2: end, height});
             start = start + end;
             return acc;
           }, []);
-          console.log('done -> acc', r);
           return r;
         } else {
           return [];
@@ -293,7 +310,6 @@ export class Chart {
       entering.merge(t)
       .transition()
       .duration(speed)
-      .attr('truc', (d, i, j, k) => console.log(d, i, j, k))
       .attr('x', d => d.x1)
       .attr('height', d => d.height)
       .attr('width', d => d.x2);

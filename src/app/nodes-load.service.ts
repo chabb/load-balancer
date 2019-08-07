@@ -168,6 +168,7 @@ export class NodesLoadService {
   }
 
   public updateSelectedNodes(nodes: string[]) {
+    console.log('nls', nodes);
     this.selectionState$.next(nodes);
   }
 

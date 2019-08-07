@@ -1,6 +1,6 @@
 import {
   AfterViewInit,
-  ChangeDetectionStrategy, ChangeDetectorRef,
+  ChangeDetectionStrategy,
   Component, OnDestroy,
   ViewEncapsulation
 } from '@angular/core';
@@ -12,6 +12,7 @@ const config: ChartConfig = {
   margin: { top: 10, bottom: 10, left: 30, right: 10 },
   binNumbers: 5,
   colorizeNodes: false,
+  wholeBin: false,
   scale: null,
   scalingMethod: 'RELATIVE',
   scaleNodes: false,

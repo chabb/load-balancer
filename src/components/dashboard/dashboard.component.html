@@ -25,6 +25,15 @@
           <label
             nz-checkbox
             (ngModelChange)="onConfigChange($event)"
+            [(ngModel)]="config.wholeBin"
+          >
+            Highlight whole bin. All the nodes of a particular bin will be highlighted
+            in the chart and the table</label>
+        </div>
+        <div class="option">
+          <label
+            nz-checkbox
+            (ngModelChange)="onConfigChange($event)"
             [(ngModel)]="config.scaleNodes"
           >
             Scale Node. This will scale the chart according to the node
