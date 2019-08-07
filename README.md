@@ -34,8 +34,9 @@ Run those command to deploy on github pages
 ng build --prod --base-href "https://chabb.github.io/load-balancer/"
 ngh
 ```
-
 We should pass the commitId to the app, so we can be sure on which commit we are
+BTW, it's quite miserable, in the sense that it does not track version number. But it's still
+possible to do a rollback, as we have the history of the different deploymeny
 
 ## Manual
 
