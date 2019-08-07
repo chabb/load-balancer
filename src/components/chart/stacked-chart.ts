@@ -36,7 +36,8 @@ const speed = 100;
 let TOOLTIP_ID = 0;
 const TOOLTIP_CLASS = 'chart-tip';
 
-// TODO(chab) decouple business logic from rendering logic
+// TODO(chab) decouple business logic from rendering logic, all the view model can be build in via RxJS,
+// and we just subscribe to it here and only do rendering logic
 
 export class Chart {
   // d3 scales
@@ -76,7 +77,9 @@ export class Chart {
       .pipe(pairwise())
       .subscribe(n => {
         if (n[0].length >= 1) {
-          n[0].forEach(id => select(`#${id}`).attr('fill', this.chartOptions.scale(id[0])));
+          n[0].forEach(id =>
+            select(`#${id}`).attr('fill', this.chartOptions.scale(id[0]))
+          );
         }
         if (n[1].length >= 1) {
           n[1].forEach(id => select(`#${id}`).attr('fill', '#e6f7ff'));
@@ -151,7 +154,7 @@ export class Chart {
 
     // TOD(chab) re-think the view model
     const nodeToBin = bins.reduce((acc, b) => {
-      Object.keys(b).forEach((key) => {
+      Object.keys(b).forEach(key => {
         if (key !== 'bin') {
           acc[key] = b.bin;
         }
@@ -215,7 +218,10 @@ export class Chart {
         if (!self.chartOptions.wholeBin) {
           self.eventBus.next({ event: EventType.MOUSEOVER, payload: [d.key] });
         } else {
-          self.eventBus.next({ event: EventType.MOUSEOVER, payload: self.nodesToBin[self.nodesToBin[d.key]]});
+          self.eventBus.next({
+            event: EventType.MOUSEOVER,
+            payload: self.nodesToBin[self.nodesToBin[d.key]]
+          });
         }
         self.showTooltip(d);
       })
@@ -272,8 +278,13 @@ export class Chart {
     b.select('.files-group')
       .transition()
       .duration(speed)
-      .attr('transform', d => `translate(${this.xRenderingScale(d.data.bin)}, ${this.yRenderingScale(d[1])})`);
-
+      .attr(
+        'transform',
+        d =>
+          `translate(${this.xRenderingScale(
+            d.data.bin
+          )}, ${this.yRenderingScale(d[1])})`
+      );
 
     // TODO(chab) rewrite
     const scale = scaleLinear()
@@ -285,16 +296,16 @@ export class Chart {
       .selectAll('g.node-group')
       .selectAll('g.files-group')
       .selectAll('.files')
-      .data((d) => {
-
+      .data(d => {
         if (d.data[d.node] && this.chartOptions.displayFilesInChart) {
           let start = 0;
           const r = d.data[d.node].files.reduce((acc, file) => {
             const fileSize = this.cachedState.files[file];
             const node = this.cachedState.nodes[d.node];
             const end = scale(fileSize / node);
-            const height = this.yRenderingScale(d[0]) - this.yRenderingScale(d[1]); //
-            acc.push({ x1: start, x2: end, height});
+            const height =
+              this.yRenderingScale(d[0]) - this.yRenderingScale(d[1]); //
+            acc.push({ x1: start, x2: end, height });
             start = start + end;
             return acc;
           }, []);
@@ -306,8 +317,12 @@ export class Chart {
 
     t.exit().remove();
 
-    const entering = t.enter().append('rect').classed('files', true);
-      entering.merge(t)
+    const entering = t
+      .enter()
+      .append('rect')
+      .classed('files', true);
+    entering
+      .merge(t)
       .transition()
       .duration(speed)
       .attr('x', d => d.x1)
