@@ -14,7 +14,7 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app w
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
 
-## Running unit tests 
+## Running unit tests
 
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
@@ -34,9 +34,10 @@ Run those command to deploy on github pages
 ng build --prod --base-href "https://chabb.github.io/load-balancer/"
 ngh
 ```
+
 We should pass the commitId to the app, so we can be sure on which commit we are
 BTW, it's quite miserable, in the sense that it does not track version number. But it's still
-possible to do a rollback, as we have the history of the different deploymeny
+possible to do a rollback, as we have the history of the different deployment
 
 ## Manual
 

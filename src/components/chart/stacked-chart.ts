@@ -78,7 +78,7 @@ export class Chart {
       .subscribe(n => {
         if (n[0].length >= 1) {
           n[0].forEach(id =>
-            select(`#${id}`).attr('fill', this.chartOptions.scale(id[0]))
+            select(`#${id}`).attr('fill', this.chartOptions.scale(id))
           );
         }
         if (n[1].length >= 1) {
