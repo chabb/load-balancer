@@ -14,7 +14,8 @@ const config: ChartConfig = {
   colorizeNodes: false,
   scale: null,
   scalingMethod: 'RELATIVE',
-  scaleNodes: false
+  scaleNodes: false,
+  displayFilesInChart: false
 };
 
 @Component({

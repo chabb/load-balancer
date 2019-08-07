@@ -12,26 +12,55 @@
     <nz-card class="conf-section" nzTitle="Chart / Table configurations">
       <div class="options">
         <div class="option">
-          <label nz-checkbox
-                 (ngModelChange)="onConfigChange($event)"
-                 [(ngModel)]="config.colorizeNodes"
-          > Colorize nodes. This will assign a color to each node on the table and the chart</label>
+          <label
+            nz-checkbox
+            (ngModelChange)="onConfigChange($event)"
+            [(ngModel)]="config.colorizeNodes"
+          >
+            Colorize nodes. This will assign a color to each node on the table
+            and the chart</label
+          >
         </div>
         <div class="option">
-          <label nz-checkbox
-                 (ngModelChange)="onConfigChange($event)"
-                 [(ngModel)]="config.scaleNodes"
-          > Scale Node. This will scale the chart according to the node load</label>
-          <div style="padding-left: 30px;"> By default, we use the % of the capacity
-            <br/>
-            <nz-radio-group [(ngModel)]="config.scalingMethod" (ngModelChange)="onConfigChange($event)">
+          <label
+            nz-checkbox
+            (ngModelChange)="onConfigChange($event)"
+            [(ngModel)]="config.scaleNodes"
+          >
+            Scale Node. This will scale the chart according to the node
+            load</label
+          >
+          <div style="padding-left: 30px;">
+            By default, we use the % of the capacity
+            <br />
+            <nz-radio-group
+              [(ngModel)]="config.scalingMethod"
+              (ngModelChange)="onConfigChange($event)"
+            >
               <label nz-radio nzValue="ABSOLUTE">Absolute load</label>
-              <label nz-radio nzValue="RELATIVE">Relative load ( % of capacity )</label>
+              <label nz-radio nzValue="RELATIVE"
+                >Relative load ( % of capacity )</label
+              >
             </nz-radio-group>
           </div>
-          <br/>
           <div class="help">
-            The size of the nodes and the files, and the distribution, can be edited in the Settings section
+            The size of the nodes and the files, and the distribution, can be
+            edited in the Settings section
+          </div>
+          <br />
+          <div class="option beta">
+            <label
+              nz-checkbox
+              (ngModelChange)="onConfigChange($event)"
+              [(ngModel)]="config.displayFilesInChart"
+            >
+              (BETA) Display files in chart. This will show the size of the
+              files in the chart with a darker shade. For example, if you look
+              at the last bin, you'll notice that only one node belongs to this
+              bin, node3. It has a load of 91%, with only one file. By looking
+              at the chart, you see that the darker shade take 91% of the width
+              of the rectangle.
+            </label>
           </div>
         </div>
       </div>

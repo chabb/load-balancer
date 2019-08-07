@@ -20,6 +20,7 @@ export interface ChartConfig {
   binNumbers: number;
   colorizeNodes: boolean;
   scaleNodes: boolean;
+  displayFilesInChart: boolean;
   scale;
   scalingMethod;
 }
@@ -235,6 +236,8 @@ export class Chart {
       .classed('node', true)
       .attr('width', this.xRenderingScale.bandwidth());
 
+    b.append('g').classed('files-group', true);
+
     b = b.merge(bars);
 
     b.select('rect.node')
@@ -247,7 +250,13 @@ export class Chart {
         d => this.yRenderingScale(d[0]) - this.yRenderingScale(d[1])
       );
 
-    // ideally we should use a scale [0,1] -> [0, width], but i'll need to rewrite some part
+    b.select('.files-group')
+      .transition()
+      .duration(speed)
+      .attr('transform', d => `translate(${this.xRenderingScale(d.data.bin)}, ${this.yRenderingScale(d[1])})`);
+
+
+    // TODO(chab) rewrite
     const scale = scaleLinear()
       .domain([0, 1])
       .range([0, this.xRenderingScale.bandwidth()]);
@@ -255,17 +264,19 @@ export class Chart {
     const t = this.svgNode
       .selectAll('g.layer')
       .selectAll('g.node-group')
+      .selectAll('g.files-group')
       .selectAll('.files')
-      .data((d, i, j) => {
-        console.log(d.data[d.node]);
-        if (d.data[d.node]) {
+      .data((d) => {
+
+        if (d.data[d.node] && this.chartOptions.displayFilesInChart) {
           let start = 0;
           const r = d.data[d.node].files.reduce((acc, file) => {
             const fileSize = this.cachedState.files[file];
             const node = this.cachedState.nodes[d.node];
             console.log(fileSize, node);
             const end = scale(fileSize / node);
-            acc.push({ x: start, y: end });
+            const height = this.yRenderingScale(d[0]) - this.yRenderingScale(d[1]); //
+            acc.push({ x1: start, x2: end, height});
             start = start + end;
             return acc;
           }, []);
@@ -274,10 +285,18 @@ export class Chart {
         } else {
           return [];
         } // we will compute the layout here
-      })
-      .enter();
+      });
 
-    t.append('rect').classed('files', true);
+    t.exit().remove();
+
+    const entering = t.enter().append('rect').classed('files', true);
+      entering.merge(t)
+      .transition()
+      .duration(speed)
+      .attr('truc', (d, i, j, k) => console.log(d, i, j, k))
+      .attr('x', d => d.x1)
+      .attr('height', d => d.height)
+      .attr('width', d => d.x2);
   }
 
   private buildDomNodes() {
