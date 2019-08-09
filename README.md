@@ -48,20 +48,38 @@ The editor will highlight errors in your JSON
 
 ## Architecture
 
-This uses a mix of imperative code and functional code
+The app use components. Think of a component like a checkbox, input box, table. Some are simple ( a text paragraph ),
+some are complex ( a chart, a table ). Each components has some state (e.g, the sorting order of a table, the colors
+of the bar on the charts ). All the difficulty of coding and scaling the app is to coordinate the state of those elements
+with external state.
 
-Dumb components (inputs, lists) and the chart are written in an imperative way. The overall state
-( nodes/files, node hovered ) is managed in a more functional way.
+The idea here is to have a representation to the state that is decoupled from those components. Think of this representation of
+a big object that describes what is on the screen. Each components gets notified when a change happens, and change their inner
+state accordingly.
 
-Higher components subscribe to a service `node-load.service.ts` that manages the state of the app and react accordingly
-to changes made by the user. Those components extract what they need from the current state and update the dumb components.
-This allows a developer to easily add new components/charts/features quite
-easily, as all the components are decoupled.
+Let's look at a concrete example
+
+In this app you, have a bar chart, and two related tables. When the user go over a bar from the bar chart, we want to highlight this particular bar,
+and then highlight the two rows in the table.
+
+A first naive approach would be to define an event listener on the bar `on('mouseover', changeBarColorAndHiglightTable`)
+`ChangeBarColorAndHighlightTable` would be a function that would highlight the bar, and then highlight the two rows.
+There you'll get into trouble, because the chart will know about the table. To come over that, you can wrap the chart and the tables
+in another component, and this component would have access to the chart, and table and highlight the bars and rows. But that's still
+weird, what would happen if we add another charts or tables; We'll have to wrap them in this component, and write a lot of plumbing code . This feels wrong somehow.
+
+The issue is that we are doing some kind of imperative programming. As soon as the user hover a bar, we try to mutate the DOM. That means
+we couple our implementation with the DOM too, we are mixing rendering and business logic. What if we have an object, let's call it A, that contains the rows to highlight ?
+
+The first step would be simply to update this object. We dont update the UI. Now every component ( chart/table/whatever ) can
+use this object to update their internal state. We dont have to wrap our components together, they just need to react to the
+changes that happen on A. Our components will just have functions that describe their behavior ( how to react to changes ), and
+we are responsible to provide those changes.
 
 ## TODO
 
-- In terms of code, try to have some reusable components for the table
-  - It's quite the same table
+- In terms of code, try to have some reusable components for the different tables
+  - We can have some metadata about the table that would describe their columns/rows
 - Better tooltip on the chart
 - Allow the chart to be resizable
 - The domain of the y axis is found in a bad way
